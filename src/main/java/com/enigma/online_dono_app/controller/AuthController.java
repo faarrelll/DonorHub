@@ -22,7 +22,7 @@ public class AuthController {
     @PostMapping(path = "/register/user")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
         RegisterResponse registeredUser = authService.registerAccount(registerRequest);
-        return ResponseUtils.buildCommonResponse(HttpStatus.CREATED,"Succes Register Account!", registeredUser);
+        return ResponseUtils.buildResponse(HttpStatus.CREATED,"Succes Register Account!", registeredUser);
     }
 
     @PostMapping(path = "/register/admin")
@@ -30,12 +30,12 @@ public class AuthController {
             @RequestBody RegisterRequest registerRequest,
             @RequestHeader(name = "X-ADMIN-SECRET-KEY") String secretKey) {
         RegisterResponse registeredUser = authService.registerAdmin(registerRequest,secretKey);
-        return ResponseUtils.buildCommonResponse(HttpStatus.CREATED,"Succes Register Account!", registeredUser);
+        return ResponseUtils.buildResponse(HttpStatus.CREATED,"Succes Register Account!", registeredUser);
     }
 
     @PostMapping(path = "/login")
     public ResponseEntity<?> loginAccount(@RequestBody LoginRequest loginRequest) {
         LoginResponse loginUser = authService.login(loginRequest);
-        return ResponseUtils.buildCommonResponse(HttpStatus.CREATED,"Succes Login Account!", loginUser);
+        return ResponseUtils.buildResponse(HttpStatus.CREATED,"Succes Login Account!", loginUser);
     }
 }

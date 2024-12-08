@@ -44,6 +44,8 @@ public class UserAccount implements UserDetails {
     List<Donation> donations;
 
 
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
@@ -52,6 +54,10 @@ public class UserAccount implements UserDetails {
     @Override
     public String getPassword() {
         return password;
+    }
+
+    public String getEmail() {
+        return username;
     }
 
     @Override
