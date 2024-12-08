@@ -37,6 +37,9 @@ public class UserAccount implements UserDetails {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     List<Log> logs;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Campaign> campaigns;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
