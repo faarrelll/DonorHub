@@ -34,11 +34,15 @@ public class UserAccount implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "userAccount",cascade = CascadeType.ALL, orphanRemoval = true)
     List<Log> logs;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Campaign> campaigns;
+
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.PERSIST)
+    List<Donation> donations;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
