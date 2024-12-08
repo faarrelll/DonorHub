@@ -2,6 +2,7 @@ package com.enigma.online_dono_app.controller;
 
 import com.enigma.online_dono_app.constant.Endpoint;
 import com.enigma.online_dono_app.dto.request.UpdateAccountRequest;
+import com.enigma.online_dono_app.dto.response.LogResponse;
 import com.enigma.online_dono_app.dto.response.RegisterResponse;
 import com.enigma.online_dono_app.service.UserAccountService;
 import com.enigma.online_dono_app.utils.ResponseUtils;
@@ -32,6 +33,25 @@ public class UserAccountController {
             @RequestParam(name = "size") int size) {
         Page<RegisterResponse> allUser = userAccountService.findAllUserAccounts(page,size);
         return ResponseUtils.buildPageResponse(HttpStatus.OK,"Succes Get All User Accounts", allUser);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @GetMapping(path = "/logs")
+    public ResponseEntity<?> getUserAccountLogs(
+            @RequestParam(name = "page") int page,
+            @RequestParam(name = "size") int size) {
+        Page<LogResponse> allUserLog = userAccountService.findAllLogs(page,size);
+        return ResponseUtils.buildPageResponse(HttpStatus.OK,"Succes Get All User Logs", allUserLog);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(path = "/logs/{id}")
+    public ResponseEntity<?> getUserAccountLogsByUserId(
+            @PathVariable("id") String id,
+            @RequestParam(name = "page") int page,
+            @RequestParam(name = "size") int size) {
+        Page<LogResponse> allUserLog = userAccountService.findAllLogsByUserId(page,size,id);
+        return ResponseUtils.buildPageResponse(HttpStatus.OK,"Succes Get All User Logs", allUserLog);
     }
 
     @PreAuthorize("hasRole('USER')")

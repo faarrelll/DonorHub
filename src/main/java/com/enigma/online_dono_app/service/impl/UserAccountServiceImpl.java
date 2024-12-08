@@ -2,9 +2,11 @@ package com.enigma.online_dono_app.service.impl;
 
 import com.enigma.online_dono_app.dto.request.RegisterRequest;
 import com.enigma.online_dono_app.dto.request.UpdateAccountRequest;
+import com.enigma.online_dono_app.dto.response.LogResponse;
 import com.enigma.online_dono_app.dto.response.RegisterResponse;
 import com.enigma.online_dono_app.entity.Log;
 import com.enigma.online_dono_app.entity.UserAccount;
+import com.enigma.online_dono_app.repository.LogRepository;
 import com.enigma.online_dono_app.repository.UserAccountRepository;
 import com.enigma.online_dono_app.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,6 +29,8 @@ import java.util.List;
 public class UserAccountServiceImpl implements UserAccountService {
 
     private final UserAccountRepository userAccountRepository;
+    private final LogRepository logRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserAccount createUserAccount(UserAccount userAccount) {
@@ -62,7 +67,7 @@ public class UserAccountServiceImpl implements UserAccountService {
         }
 //        updatedUserAccount.setEmail(updateAccountRequest.getEmail());
         updatedUserAccount.setUsername(updateAccountRequest.getUsername());
-        updatedUserAccount.setPassword(updateAccountRequest.getPassword());
+        updatedUserAccount.setPassword(passwordEncoder.encode(updateAccountRequest.getPassword()));
         updatedUserAccount.getLogs().add(createLog(updatedUserAccount, "Updated user account"));
         userAccountRepository.saveAndFlush(updatedUserAccount);
         return toRegisterResponse(updatedUserAccount);
@@ -81,17 +86,6 @@ public class UserAccountServiceImpl implements UserAccountService {
         return userAccountRepository.findByEmail(username);
     }
 
-    public RegisterResponse toRegisterResponse(UserAccount userAccount) {
-        return RegisterResponse.builder()
-                .id(userAccount.getId())
-                .email(userAccount.getUsername())
-                .username(userAccount.getEmail())
-                .build();
-    }
-
-    public boolean findExistUsername(String username) {
-        return userAccountRepository.existsByUsername(username);
-    }
 
     @Override
     public Log createLog(UserAccount userAccount, String Action) {
@@ -104,5 +98,48 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Override
     public void saveLog(UserAccount userAccount) {
         userAccountRepository.saveAndFlush(userAccount);
+    }
+
+    @Override
+    public Page<LogResponse> findAllLogs(int page, int size) {
+        UserAccount userAccount = getByContext();
+        Pageable pageable = PageRequest.of(page-1, size);
+        return logRepository.findAllByUserAccount(userAccount,pageable).map(this::toLogResponse);
+
+    }
+
+    @Override
+    public Page<LogResponse> findAllLogsByUserId(int page, int size, String userId) {
+        Pageable pageable = PageRequest.of(page-1, size);
+        return logRepository.findAllByUserAccount(getUserAccountId(userId),pageable).map(this::toLogResponse);
+
+    }
+
+    @Override
+    public UserAccount getUserAccountId(String id) {
+        return userAccountRepository.findById(id).orElseThrow(
+                () -> new UsernameNotFoundException("User not found")
+        );
+    }
+
+    public LogResponse toLogResponse(Log log){
+        return LogResponse.builder()
+                .id(log.getId())
+                .username(log.getUserAccount().getUsername())
+                .Action(log.getAction())
+                .DateTime(log.getCreatedAt())
+                .build();
+    }
+
+    public RegisterResponse toRegisterResponse(UserAccount userAccount) {
+        return RegisterResponse.builder()
+                .id(userAccount.getId())
+                .email(userAccount.getUsername())
+                .username(userAccount.getEmail())
+                .build();
+    }
+
+    public boolean findExistUsername(String username) {
+        return userAccountRepository.existsByUsername(username);
     }
 }
