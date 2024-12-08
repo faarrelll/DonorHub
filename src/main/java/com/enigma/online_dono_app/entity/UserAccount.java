@@ -34,6 +34,9 @@ public class UserAccount implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Log> logs;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
