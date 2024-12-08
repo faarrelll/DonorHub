@@ -96,6 +96,11 @@ public class CampaignServiceImpl implements CampaignService {
 
     }
 
+    @Override
+    public void saveCampaign(Campaign campaign) {
+        campaignRepository.save(campaign);
+    }
+
     public CampaignResponse toCampaignResponse(Campaign campaign) {
         return CampaignResponse.builder()
                 .id(campaign.getId())

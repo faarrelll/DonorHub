@@ -23,4 +23,5 @@ public interface CampaignService {
     // get campaign by id -> hanya admin
     CampaignResponse getCampaign(String id);
     Campaign getCampaignById(String id);
+    void saveCampaign(Campaign campaign);
 }

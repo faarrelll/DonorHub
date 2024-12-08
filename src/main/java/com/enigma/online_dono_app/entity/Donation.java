@@ -1,5 +1,6 @@
 package com.enigma.online_dono_app.entity;
 
+import com.enigma.online_dono_app.constant.StatusDonation;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +20,7 @@ public class Donation {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String amount;
+    private Double amount;
 
     @ManyToOne
     @JoinColumn(name = "campaign_id")
@@ -28,6 +29,10 @@ public class Donation {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserAccount userAccount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_donation")
+    private StatusDonation statusDonation;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
