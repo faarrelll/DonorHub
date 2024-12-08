@@ -51,6 +51,8 @@ public class AuthServiceImpl implements AuthService {
         UserAccount userAccount = (UserAccount) authenticated.getPrincipal();
 
         if (authenticated.isAuthenticated()){
+            userAccount.getLogs().add(userAccountService.createLog(userAccount,"login to Apps"));
+            userAccountService.saveLog(userAccount);
             return LoginResponse.builder()
                     .accessToken(jwtService.generateToken(userAccount))
                     .build();

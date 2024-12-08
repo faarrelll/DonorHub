@@ -3,6 +3,7 @@ package com.enigma.online_dono_app.service.impl;
 import com.enigma.online_dono_app.dto.request.RegisterRequest;
 import com.enigma.online_dono_app.dto.request.UpdateAccountRequest;
 import com.enigma.online_dono_app.dto.response.RegisterResponse;
+import com.enigma.online_dono_app.entity.Log;
 import com.enigma.online_dono_app.entity.UserAccount;
 import com.enigma.online_dono_app.repository.UserAccountRepository;
 import com.enigma.online_dono_app.service.UserAccountService;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -27,6 +29,10 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     @Override
     public UserAccount createUserAccount(UserAccount userAccount) {
+        if (userAccount.getLogs() == null) {
+            userAccount.setLogs(new ArrayList<>());
+        }
+        userAccount.getLogs().add(createLog(userAccount, "Registered to Apps"));
         return userAccountRepository.saveAndFlush(userAccount);
     }
 
@@ -57,7 +63,7 @@ public class UserAccountServiceImpl implements UserAccountService {
 //        updatedUserAccount.setEmail(updateAccountRequest.getEmail());
         updatedUserAccount.setUsername(updateAccountRequest.getUsername());
         updatedUserAccount.setPassword(updateAccountRequest.getPassword());
-
+        updatedUserAccount.getLogs().add(createLog(updatedUserAccount, "Updated user account"));
         userAccountRepository.saveAndFlush(updatedUserAccount);
         return toRegisterResponse(updatedUserAccount);
     }
@@ -85,5 +91,18 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     public boolean findExistUsername(String username) {
         return userAccountRepository.existsByUsername(username);
+    }
+
+    @Override
+    public Log createLog(UserAccount userAccount, String Action) {
+        return Log.builder()
+                .userAccount(userAccount)
+                .Action(Action)
+                .build();
+    }
+
+    @Override
+    public void saveLog(UserAccount userAccount) {
+        userAccountRepository.saveAndFlush(userAccount);
     }
 }

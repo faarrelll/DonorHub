@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class UserAccount implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
-    @OneToMany(mappedBy = "userAccount",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "userAccount",cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     List<Log> logs;
 
     @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -42,9 +43,6 @@ public class UserAccount implements UserDetails {
 
     @OneToMany(mappedBy = "userAccount", cascade = CascadeType.PERSIST)
     List<Donation> donations;
-
-
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
