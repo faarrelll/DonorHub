@@ -72,7 +72,7 @@ public class CampaignServiceImpl implements CampaignService {
         Pageable pageable = PageRequest.of(page-1, size);
         Page<Campaign> campaigns;
         if (userAccount.getRole().equals(Role.ROLE_USER)) {
-            campaigns = campaignRepository.findByUserAccount(userAccount, pageable);
+            campaigns = campaignRepository.findByStatus(Status.PROCESS, pageable);
         } else {
             campaigns = campaignRepository.findAll(pageable);
         }
